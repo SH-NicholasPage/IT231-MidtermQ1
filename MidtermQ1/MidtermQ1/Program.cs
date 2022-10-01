@@ -34,12 +34,16 @@ namespace MidtermQ1
                 throw new FileNotFoundException("ERROR: Couldn't find the inputs file. Tell the instructor about this ASAP.");
             }
 
-            Setup(lines);
-            float score = PerformTests();
+            float score = 0f;
+
+            if (Setup(lines) == true)
+            {
+                score = PerformTests();
+            }
             Console.WriteLine("\nScore: " + Math.Round(score, 2) + "/" + MAX_SCORE);
         }
 
-        private static void Setup(List<List<String>> lines)
+        private static bool Setup(List<List<String>> lines)
         {
             foreach (List<String> line in lines)
             {
@@ -62,21 +66,31 @@ namespace MidtermQ1
                         Validation.Add(Convert.ToInt32(line[0]), Campus.PersonFactory((line[1][0] == 's') ? PersonType.Student : PersonType.Teacher, line[2], line[3], Convert.ToSingle(line[4])));
                         break;
                     case 'c'://Class
-                        Validation.Add(Convert.ToInt32(line[0]), Campus.AddClass(line[2], line[3], Convert.ToSingle(line[4]), ((Teacher)Validation[elem5.Value]), arr!.Select(x => ((Student)Validation[x])).ToArray()));
+                        try
+                        {
+                            Validation.Add(Convert.ToInt32(line[0]), Campus.AddClass(line[2], line[3], Convert.ToSingle(line[4]), ((Teacher)Validation[elem5.Value]), arr!.Select(x => ((Student)Validation[x])).ToArray()));
+                        }
+                        catch (InvalidCastException)
+                        {
+                            Console.Error.WriteLine("FATAL ERROR: A person was not added correctly. Aborting.");
+                            return false;
+                        }
                         break;
                 }
             }
+
+            return true;
         }
 
         private static float PerformTests()
         {
             float score = MAX_SCORE;
             Console.WriteLine("Checking campus validity...");
-            score -= CheckCampusValidity(22);
+            score -= Math.Abs(CheckCampusValidity(22) - 22);
             Console.WriteLine("Checking inheritance & class completion...");
-            score -= TestInheritance(25);
+            score -= Math.Abs(TestInheritance(25) - 25);
             Console.WriteLine("Checking method correctness in Campus and Class...");
-            score -= TestOtherMethods(33);
+            score -= Math.Abs(TestOtherMethods(33) - 33);
             return score;
         }
 
@@ -85,7 +99,7 @@ namespace MidtermQ1
             int people = 0;
             int classes = 0;
 
-            foreach(char c in Dict.Values.Select(x => x.Item1))
+            foreach (char c in Dict.Values.Select(x => x.Item1))
             {
                 switch (c)
                 {
@@ -99,13 +113,13 @@ namespace MidtermQ1
                 }
             }
 
-            if(Campus.People.Count != people)
+            if (Campus.People.Count != people)
             {
                 Console.Error.WriteLine("Not enough people were added to the campus!");
                 score = (score / 2) * (people - Math.Abs(Campus.People.Count - people)) / people;
             }
-            
-            if(Campus.Classes.Count != classes)
+
+            if (Campus.Classes.Count != classes)
             {
                 Console.Error.WriteLine("Not enough classes were added to the campus!");
                 score = (score / 2) * (classes - Math.Abs(Campus.Classes.Count - classes)) / classes;
@@ -146,18 +160,18 @@ namespace MidtermQ1
             int checks = 7;
             float decreasePerIncorrect = (float)score / checks;
             float[] GPAs = Dict.Values.Where(x => x.Item1 == 's').Select(x => x.Item4).OrderBy(x => x).ToArray();
-            float[] salaries = Dict.Values.Where(x => x.Item1 == 't').Select(x => x.Item4).OrderBy(x => x).ToArray();
+            float[] salaries = Dict.Values.Where(x => x.Item1 == 'f').Select(x => x.Item4).OrderBy(x => x).ToArray();
             Class[] classes = Validation.Values.Count(x => x == null) > 0 ? null : Validation.Values.Where(x => x.GetType() == typeof(Class)).Select(x => (Class)x).ToArray();
 
             float med = (float)Math.Round(((GPAs.Length % 2 == 0) ? (GPAs[GPAs.Length / 2] + GPAs[GPAs.Length / 2 - 1]) / 2 : GPAs[GPAs.Length - 1]), 3);
 
-            if(NearlyEqual(Campus.GetAvgStudentGPA(), GPAs.Average()) == false)
+            if (NearlyEqual(Campus.GetAvgStudentGPA(), GPAs.Average()) == false)
             {
                 Console.Error.WriteLine("GetAvgStudentGPA() returned incorrect value. Returned: " + Math.Round(Campus.GetAvgStudentGPA(), 3) + " | Expected: " + Math.Round(GPAs.Average(), 3));
                 score -= decreasePerIncorrect;
             }
 
-            if(NearlyEqual(Campus.GetMedianStudentGPA(), med) == false)
+            if (NearlyEqual(Campus.GetMedianStudentGPA(), med) == false)
             {
                 Console.Error.WriteLine("GetMedianStudentGPA() returned incorrect value. Returned: " + Math.Round(Campus.GetMedianStudentGPA(), 3) + " | Expected: " + Math.Round(med, 3));
                 score -= decreasePerIncorrect;
@@ -165,41 +179,51 @@ namespace MidtermQ1
 
             int key = Dict.Where(x => x.Value.Item1 == 's').OrderBy(x => x.Value.Item4).LastOrDefault().Key;
 
-            if(Campus.GetStudentWithHighestGPA() != Validation[key])
+            if (Campus.GetStudentWithHighestGPA() != Validation[key])
             {
                 Console.Error.WriteLine("GetStudentWithHighestGPA() returned incorrect value. Expected " + Dict[key].Item2);
                 score -= decreasePerIncorrect;
             }
 
-            if(NearlyEqual(Campus.GetAvgTeacherSalary(), salaries.Average()) == false)
+            if (NearlyEqual(Campus.GetAvgTeacherSalary(), salaries.Average()) == false)
             {
                 Console.Error.WriteLine("GetAvgTeacherSalary() returned incorrect value. Returned: " + Math.Round(Campus.GetAvgTeacherSalary(), 3) + " | Expected: " + Math.Round(salaries.Average(), 3));
                 score -= decreasePerIncorrect;
             }
 
-            key = Dict.Where(x => x.Value.Item1 == 'c').GroupBy(x => x.Value.Item5).OrderByDescending(x => x.Count()).Select(x => x.Key).FirstOrDefault().Value;
-
-            if(Campus.GetTeacherTeachingTheMost() != Validation[key])
-            {
-                Console.Error.WriteLine("GetTeacherTeachingTheMost() returned incorrect value. Expected " + Dict[key].Item2);
-                score -= decreasePerIncorrect;
-            }
-
             if (classes != null)
             {
+                key = Dict.Where(x => x.Value.Item1 == 'c').GroupBy(x => x.Value.Item5).OrderByDescending(x => x.Count()).Select(x => x.Key).FirstOrDefault().Value;
+
+                if (Campus.GetTeacherTeachingTheMost() != Validation[key])
+                {
+                    Console.Error.WriteLine("GetTeacherTeachingTheMost() returned incorrect value. Expected " + Dict[key].Item2);
+                    score -= decreasePerIncorrect;
+                }
+
                 foreach (Class c in classes)
                 {
                     key = Validation.Where(x => x.Value == c).First().Key;
-                    if(c.GetHowManyStudentsInClass() != Dict[key].Item6!.Length)
+                    if (c.GetHowManyStudentsInClass() != Dict[key].Item6!.Length)
                     {
                         Console.Error.WriteLine("GetHowManyStudentsInClass() returned incorrect value. Returned: " + c.GetHowManyStudentsInClass(), 3
                             + " | Expected: " + Dict[key].Item6!.Length);
                         score -= decreasePerIncorrect;
                     }
 
-                    float avg = Convert.ToSingle(Dict.Where(x => Dict[key].Item6!.Contains(x.Key)).Select(x => x.Value.Item5).Average().Value);
+                    List<KeyValuePair<Int32, Tuple<Char, String, String, Single, Int32?, Int32[]?>>> test2 = new List<KeyValuePair<int, Tuple<char, string, string, float, int?, int[]?>>>();
 
-                    if(NearlyEqual(c.GetAvgGPAInClass(), avg) == false)
+                    foreach (KeyValuePair<Int32, Tuple<Char, String, String, Single, Int32?, Int32[]?>> kv in Dict)
+                    {
+                        if (Dict[key].Item6!.Contains(kv.Key))
+                        {
+                            test2.Add(kv);
+                        }
+                    }
+
+                    float avg = Convert.ToSingle(Dict.Where(x => Dict[key].Item6!.Contains(x.Key)).Select(x => x.Value.Item4).Average());
+
+                    if (NearlyEqual(c.GetAvgGPAInClass(), avg) == false)
                     {
                         Console.Error.WriteLine("GetAvgGPAInClass() returned incorrect value. Returned: " + Math.Round(c.GetAvgGPAInClass(), 3) + " | Expected: " + Math.Round(avg, 3));
                         score -= decreasePerIncorrect;
@@ -208,8 +232,8 @@ namespace MidtermQ1
             }
             else
             {
-                Console.Error.WriteLine("One or more null classes exist, so testing the methods in Class has been skipped.");
-                score -= decreasePerIncorrect * 2;//Since two checks can't be completed
+                Console.Error.WriteLine("One or more null classes exist, so testing anything related to classes will be skipped.");
+                score -= decreasePerIncorrect * 3;//Since two checks can't be completed
             }
 
             return score;

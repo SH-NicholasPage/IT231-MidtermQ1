@@ -8,5 +8,7 @@ namespace MidtermQ1
 {
     public class Teacher : Person
     {
+        //TODO: Implement the Teacher class. Use the base class effectively.
+        //At the minimum, you will need a constructor and several properties (which must have public getters).
     }
 }
