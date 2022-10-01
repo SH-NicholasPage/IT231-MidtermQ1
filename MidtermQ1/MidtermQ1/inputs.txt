@@ -1,0 +1,20 @@
+﻿0, s, Sophie Dre, sdre@southhills.edu, 3.4
+1, s, Cassy Ozzy, cozzy@southhills.edu, 2.3
+2, s, Gwen Price, gprice@southhills.edu, 3.3
+3, s, Quandale Dingle, qdingle@southhills.edu, 1.1
+4, s, Roderick Kenyon, rkenyon@southhills.edu, 4.0
+5, s, William Blanch, wblanch@southhills.edu, 3.4
+6, s, Issac Lionel, ilionel@southhills.edu, 2.6
+7, f, Annmarie Linton, alinton@southhills.edu, 54928.06
+8, f, Leonard Bertram, lbretram@southhills.edu, 61753.24
+9, f, Maximillian Merlyn, mmerlyn@southhills.edu, 57712.20
+10, s, Tara Nancy, tnancy@southhills.edu, 3.7
+11, c, GE117, Applied Algrbra, 4, 9, 0 2 3 5
+12, c, GE183, Business English 1, 4, 7, 0 1 3 4
+13, c, GE130, History of IT, 2, 9, 10 0 4 5 6
+14, c, CP127, Introduction to Operating Systems, 2.5, 9, 0 5 6 10 4
+15, s, Jonty Lou, jlou@southhills.edu, 3.0
+16, c, CP122, Introdution to Programming & Logic, 4, 8, 1 15 10 5 3
+17, s, Jeremy Rudolph, jrudolph@southhills.edu, 3.1
+18, f, Jason Cher, jcher@southhills.edu, 73796.81
+19, c, IT200, Networking Essentials, 4, 18, 0 3 4 6 15 17
