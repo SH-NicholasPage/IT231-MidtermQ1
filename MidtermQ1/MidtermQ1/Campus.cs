@@ -2,8 +2,7 @@
 * Name: [YOUR NAME HERE]
 * South Hills Username: [YOUR SOUTH HILLS USERNAME HERE]
 */
-#pragma warning disable CS8603
-#pragma warning disable CS8618
+#pragma warning disable CS8600, CS8603, CS8618
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +43,7 @@ namespace MidtermQ1
         {
             //TODO: Calculate the median GPA for all students and return it.
             //Reminder: The median is the central number of a data set. If there are 2 numbers in the middle, the median is the average of those 2 numbers.
+            //Ex: The median of this array [2, 2, 3, 5, 8] is 3. The median of this array [4, 6, 6, 8, 9, 10] is 7.
             throw new NotImplementedException();
         }
 

@@ -1,5 +1,4 @@
-﻿#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8629 // Nullable value type may be null.
+﻿#pragma warning disable CS8600, CS8629
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -165,29 +164,61 @@ namespace MidtermQ1
 
             float med = (float)Math.Round(((GPAs.Length % 2 == 0) ? (GPAs[GPAs.Length / 2] + GPAs[GPAs.Length / 2 - 1]) / 2 : GPAs[GPAs.Length - 1]), 3);
 
-            if (NearlyEqual(Campus.GetAvgStudentGPA(), GPAs.Average()) == false)
+            try
             {
-                Console.Error.WriteLine("GetAvgStudentGPA() returned incorrect value. Returned: " + Math.Round(Campus.GetAvgStudentGPA(), 3) + " | Expected: " + Math.Round(GPAs.Average(), 3));
+                if (NearlyEqual(Campus.GetAvgStudentGPA(), GPAs.Average()) == false)
+                {
+                    Console.Error.WriteLine("GetAvgStudentGPA() returned incorrect value. Returned: " + Math.Round(Campus.GetAvgStudentGPA(), 3) + " | Expected: " + Math.Round(GPAs.Average(), 3));
+                    score -= decreasePerIncorrect;
+                }
+            }
+            catch (Exception ex) when (ex is NotImplementedException == false)
+            {
+                Console.Error.WriteLine("ERROR: GetAvgStudentGPA() threw an exception.");
                 score -= decreasePerIncorrect;
             }
 
-            if (NearlyEqual(Campus.GetMedianStudentGPA(), med) == false)
+            try
             {
-                Console.Error.WriteLine("GetMedianStudentGPA() returned incorrect value. Returned: " + Math.Round(Campus.GetMedianStudentGPA(), 3) + " | Expected: " + Math.Round(med, 3));
+                if (NearlyEqual(Campus.GetMedianStudentGPA(), med) == false)
+                {
+                    Console.Error.WriteLine("GetMedianStudentGPA() returned incorrect value. Returned: " + Math.Round(Campus.GetMedianStudentGPA(), 3) + " | Expected: " + Math.Round(med, 3));
+                    score -= decreasePerIncorrect;
+                }
+            }
+            catch (Exception ex) when (ex is NotImplementedException == false)
+            {
+                Console.Error.WriteLine("ERROR: GetMedianStudentGPA() threw an exception.");
                 score -= decreasePerIncorrect;
             }
 
             int key = Dict.Where(x => x.Value.Item1 == 's').OrderBy(x => x.Value.Item4).LastOrDefault().Key;
 
-            if (Campus.GetStudentWithHighestGPA() != Validation[key])
+            try
             {
-                Console.Error.WriteLine("GetStudentWithHighestGPA() returned incorrect value. Expected " + Dict[key].Item2);
+                if (Campus.GetStudentWithHighestGPA() != Validation[key])
+                {
+                    Console.Error.WriteLine("GetStudentWithHighestGPA() returned incorrect value. Expected " + Dict[key].Item2);
+                    score -= decreasePerIncorrect;
+                }
+            }
+            catch (Exception ex) when (ex is NotImplementedException == false)
+            {
+                Console.Error.WriteLine("ERROR: GetStudentWithHighestGPA() threw an exception.");
                 score -= decreasePerIncorrect;
             }
 
-            if (NearlyEqual(Campus.GetAvgTeacherSalary(), salaries.Average()) == false)
+            try
             {
-                Console.Error.WriteLine("GetAvgTeacherSalary() returned incorrect value. Returned: " + Math.Round(Campus.GetAvgTeacherSalary(), 3) + " | Expected: " + Math.Round(salaries.Average(), 3));
+                if (NearlyEqual(Campus.GetAvgTeacherSalary(), salaries.Average()) == false)
+                {
+                    Console.Error.WriteLine("GetAvgTeacherSalary() returned incorrect value. Returned: " + Math.Round(Campus.GetAvgTeacherSalary(), 3) + " | Expected: " + Math.Round(salaries.Average(), 3));
+                    score -= decreasePerIncorrect;
+                }
+            }
+            catch (Exception ex) when (ex is NotImplementedException == false)
+            {
+                Console.Error.WriteLine("ERROR: GetAvgTeacherSalary() threw an exception.");
                 score -= decreasePerIncorrect;
             }
 
@@ -195,19 +226,35 @@ namespace MidtermQ1
             {
                 key = Dict.Where(x => x.Value.Item1 == 'c').GroupBy(x => x.Value.Item5).OrderByDescending(x => x.Count()).Select(x => x.Key).FirstOrDefault().Value;
 
-                if (Campus.GetTeacherTeachingTheMost() != Validation[key])
+                try
                 {
-                    Console.Error.WriteLine("GetTeacherTeachingTheMost() returned incorrect value. Expected " + Dict[key].Item2);
+                    if (Campus.GetTeacherTeachingTheMost() != Validation[key])
+                    {
+                        Console.Error.WriteLine("GetTeacherTeachingTheMost() returned incorrect value. Expected " + Dict[key].Item2);
+                        score -= decreasePerIncorrect;
+                    }
+                }
+                catch (Exception ex) when (ex is NotImplementedException == false)
+                {
+                    Console.Error.WriteLine("ERROR: GetTeacherTeachingTheMost() threw an exception.");
                     score -= decreasePerIncorrect;
                 }
 
                 foreach (Class c in classes)
                 {
                     key = Validation.Where(x => x.Value == c).First().Key;
-                    if (c.GetHowManyStudentsInClass() != Dict[key].Item6!.Length)
+                    try
                     {
-                        Console.Error.WriteLine("GetHowManyStudentsInClass() returned incorrect value. Returned: " + c.GetHowManyStudentsInClass(), 3
-                            + " | Expected: " + Dict[key].Item6!.Length);
+                        if (c.GetHowManyStudentsInClass() != Dict[key].Item6!.Length)
+                        {
+                            Console.Error.WriteLine("GetHowManyStudentsInClass() returned incorrect value. Returned: " + c.GetHowManyStudentsInClass(), 3
+                                + " | Expected: " + Dict[key].Item6!.Length);
+                            score -= decreasePerIncorrect;
+                        }
+                    }
+                    catch (Exception ex) when (ex is NotImplementedException == false)
+                    {
+                        Console.Error.WriteLine("ERROR: GetHowManyStudentsInClass() threw an exception.");
                         score -= decreasePerIncorrect;
                     }
 
@@ -223,9 +270,17 @@ namespace MidtermQ1
 
                     float avg = Convert.ToSingle(Dict.Where(x => Dict[key].Item6!.Contains(x.Key)).Select(x => x.Value.Item4).Average());
 
-                    if (NearlyEqual(c.GetAvgGPAInClass(), avg) == false)
+                    try
                     {
-                        Console.Error.WriteLine("GetAvgGPAInClass() returned incorrect value. Returned: " + Math.Round(c.GetAvgGPAInClass(), 3) + " | Expected: " + Math.Round(avg, 3));
+                        if (NearlyEqual(c.GetAvgGPAInClass(), avg) == false)
+                        {
+                            Console.Error.WriteLine("GetAvgGPAInClass() returned incorrect value. Returned: " + Math.Round(c.GetAvgGPAInClass(), 3) + " | Expected: " + Math.Round(avg, 3));
+                            score -= decreasePerIncorrect;
+                        }
+                    }
+                    catch (Exception ex) when (ex is NotImplementedException == false)
+                    {
+                        Console.Error.WriteLine("ERROR: GetAvgGPAInClass() threw an exception.");
                         score -= decreasePerIncorrect;
                     }
                 }
